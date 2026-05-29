@@ -1,55 +1,838 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ru">
 <head>
-  <title>Калькулятор</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SkillForge | Планировщик занятий — n! √x xʸ |x|</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0c16;
+            background-image: radial-gradient(circle at 20% 0%, rgba(79, 172, 254, 0.06) 0%, transparent 60%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+        }
+
+        .top-footer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #000000;
+            color: #ffffff;
+            padding: 8px 0;
+            z-index: 1002;
+            border-bottom: 2px solid #6b84ff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .top-footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-link i { font-size: 1rem; }
+        .footer-link:hover { color: #956bff; transform: translateY(-2px); }
+        .separator { color: #4ecdc4; margin: 0 5px; }
+
+        .running-blue-footer {
+            position: fixed;
+            top: 54px;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #003791 0%, #0a4b9e 50%, #003791 100%);
+            color: white;
+            padding: 6px 0;
+            z-index: 1001;
+            border-bottom: 2px solid #ffcc00;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .running-text {
+            display: inline-block;
+            animation: scrollText 22s linear infinite;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .running-text i { margin: 0 12px; color: #ffcc00; }
+        .running-text span { margin: 0 20px; }
+        .running-text .highlight { color: #ffcc00; background: rgba(0,0,0,0.3); padding: 2px 10px; border-radius: 30px; margin: 0 8px; }
+
+        @keyframes scrollText {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .running-blue-footer:hover .running-text { animation-play-state: paused; }
+
+        .tabs-bar {
+            position: fixed;
+            top: 98px;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 12, 22, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs-container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #c0c3e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn i { font-size: 1rem; }
+        .tab-btn.active { color: #ffaa8a; border-bottom-color: #ffaa8a; background: rgba(255, 140, 107, 0.1); }
+        .tab-btn:hover:not(.active) { color: #ffffff; background: rgba(255, 255, 255, 0.05); }
+
+        .tab-wrapper { position: relative; flex: 1; text-align: center; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(18, 20, 35, 0.98);
+            backdrop-filter: blur(12px);
+            border-radius: 0 0 20px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            z-index: 1001;
+            padding: 8px 0;
+        }
+        .dropdown-content.show { display: block; }
+        .dropdown-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e0e3ff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .dropdown-item i { width: 24px; color: #ffaa8a; }
+        .dropdown-item:hover { background: rgba(255, 140, 107, 0.2); color: white; }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 420px;
+            margin: 165px auto 12px auto;
+            z-index: 20;
+        }
+
+        .planner-card {
+            background: rgba(18, 20, 35, 0.96);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 6px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.04);
+            padding: 3px 8px 3px 6px;
+            border-radius: 28px;
+        }
+        .logo-icon { background: linear-gradient(145deg, #ffaa8a, #ff7649); width: 26px; height: 26px; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; }
+        .logo-text { font-weight: 800; font-size: 0.9rem; background: linear-gradient(135deg, #fff, #ffcfb5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo-text span { background: linear-gradient(135deg, #ffaa8a, #ff7649); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        .display-area {
+            background: #07090f;
+            border-radius: 20px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255,140,107,0.3);
+        }
+        .expression-history { color: #b0b3d0; font-size: 0.6rem; text-align: right; min-height: 18px; font-family: monospace; }
+        .current-value { color: white; font-size: 2rem; font-weight: 800; text-align: right; word-break: break-word; }
+
+        .keys-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+        .row { display: flex; gap: 8px; }
+        .btn-calc {
+            flex: 1; aspect-ratio: 1 / 1; border: none; border-radius: 18px; font-weight: 600;
+            cursor: pointer; background: #1a1d2f; color: #f0f3ff; font-family: inherit;
+        }
+        .btn-calc:active { transform: scale(0.94); }
+        .digit-btn { background: #1a1d2f; font-size: 1.2rem; }
+        .function-btn { background: #12152a; color: #c0c3e0; font-size: 0.9rem; }
+        .operation-btn { background: linear-gradient(145deg, #e25c3a, #c94724); color: white; }
+        .special-cost-btn { background: linear-gradient(135deg, #2c5f5a, #1e4742); color: #d9ffe6; font-size: 0.7rem; gap: 4px; }
+        .equals-btn { background: linear-gradient(145deg, #3ba39b, #2c827a); }
+        .zero-btn { flex: 2; aspect-ratio: auto; min-height: 52px; }
+        .math-btn { background: linear-gradient(145deg, #3d3c6e, #2a2952); color: #e0dcff; }
+        .factorial-btn { background: linear-gradient(145deg, #6d3b9e, #4a2a6e); }
+
+        .info-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 28px; margin: 8px 0 12px; }
+        .operation-status { display: flex; align-items: center; gap: 6px; color: #c0c3e0; font-size: 0.65rem; }
+        .cost-badge-mini { background: rgba(168,230,207,0.12); padding: 3px 8px; border-radius: 20px; font-size: 0.6rem; color: #a8f0da; }
+
+        .github-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: #1a1d2a; padding: 8px 14px; border-radius: 32px; text-decoration: none;
+            color: white; font-weight: 500; font-size: 0.7rem; margin-top: 8px;
+            border: 1px solid rgba(255,140,107,0.3);
+        }
+        .github-btn:hover { background: #2c974b; }
+
+        .student-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.06); color: #b0b3d0; font-size: 0.65rem; }
+
+        .subjects-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 16px 0;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .subjects-grid::-webkit-scrollbar { width: 4px; }
+        .subjects-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .subjects-grid::-webkit-scrollbar-thumb { background: #ffaa8a; border-radius: 10px; }
+
+        .subject-card {
+            background: rgba(26, 29, 47, 0.8);
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid rgba(255, 140, 107, 0.2);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .subject-card:hover {
+            border-color: rgba(255, 140, 107, 0.6);
+            transform: translateX(5px);
+            background: rgba(26, 29, 47, 0.95);
+        }
+        .subject-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+        .subject-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .subject-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #ffaa8a, #ff7649);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+        }
+        .subject-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+        .subject-desc {
+            color: #b0b3d0;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .subject-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 0.7rem;
+        }
+        .subject-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #a8f0da;
+        }
+        .subject-meta i { color: #ffaa8a; width: 16px; }
+        .detail-btn {
+            background: rgba(255, 140, 107, 0.2);
+            border: 1px solid rgba(255, 140, 107, 0.4);
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #ffaa8a;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            width: fit-content;
+        }
+        .detail-btn:hover {
+            background: rgba(255, 140, 107, 0.4);
+            color: white;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: rgba(18, 20, 35, 0.98);
+            border-radius: 28px;
+            padding: 24px;
+            max-width: 340px;
+            width: 90%;
+            border: 1px solid rgba(255,140,107,0.3);
+            text-align: center;
+        }
+        .modal-content h3 { color: white; margin-bottom: 10px; }
+        .modal-content p { color: #c0c3e0; margin: 8px 0; font-size: 0.85rem; }
+        .modal-close {
+            background: linear-gradient(135deg, #e25c3a, #c94724);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .about-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffaa8a;
+            margin-bottom: 15px;
+            box-shadow: 0 0 20px rgba(255, 140, 107, 0.3);
+        }
+
+        @media (max-width: 550px) {
+            .top-footer-content { flex-direction: column; }
+            .running-blue-footer { top: 78px; }
+            .tabs-bar { top: 122px; }
+            .app-wrapper { margin-top: 190px !important; }
+        }
+        @media (max-width: 400px) {
+            .app-wrapper { margin-top: 200px !important; }
+            .tab-btn { font-size: 0.75rem; padding: 10px 8px; }
+        }
+    </style>
 </head>
-
 <body>
-  <div> <!-- div - это базовый html-контейнер, который может содержать в себе другие html-элементы. -->
-    
-    <!-- блок с экраном калькулятора, где будет выводиться результат вычислений. -->
-    <div id="result">
-      0
+
+<div class="top-footer">
+    <div class="top-footer-content">
+        <div class="footer-section"><i class="fas fa-copyright"></i><span>2026 SkillForge. Все права защищены</span></div>
+        <div class="footer-section">
+            <a href="https://vk.com" target="_blank" class="footer-link"><i class="fab fa-vk"></i> VK</a>
+            <a href="https://ok.ru" target="_blank" class="footer-link"><i class="fab fa-odnoklassniki"></i> OK</a>
+            <a href="https://telegram.org" target="_blank" class="footer-link"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://yandex.ru" target="_blank" class="footer-link"><i class="fab fa-yandex"></i> Yandex</a>
+        </div>
+        <div class="footer-section">
+            <a href="#" class="footer-link">Конфиденциальность</a><span class="separator">|</span>
+            <a href="#" class="footer-link">Условия</a><span class="separator">|</span>
+            <a href="#" class="footer-link">Cookies</a>
+        </div>
     </div>
+</div>
 
-    <!-- блок с кнопками калькулятора. -->
-    <div>
-      <!--горизонтальный ряд из четырех кнопок-->
-      <div>  
-        <button id="btn_op_clear">C</button>    <!-- про тэг кнопки: https://www.w3schools.com/tags/tag_button.asp -->
-        <button id="btn_op_sign">+/-</button>
-        <button id="btn_op_percent">%</button>
-        <button id="btn_op_div">/</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_7">7</button>
-        <button id="btn_digit_8">8</button>
-        <button id="btn_digit_9">9</button>
-        <button id="btn_op_mult">x</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_4">4</button>
-        <button id="btn_digit_5">5</button>
-        <button id="btn_digit_6">6</button>
-        <button id="btn_op_minus">-</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_1">1</button>
-        <button id="btn_digit_2">2</button>
-        <button id="btn_digit_3">3</button>
-        <button id="btn_op_plus">+</button>
-      </div>
-
-      <div>
-        <button id="btn_digit_0">0</button>
-        <button id="btn_digit_dot">.</button>
-        <button id="btn_op_equal">=</button>
-      </div>
+<div class="running-blue-footer">
+    <div class="running-text">
+        <i class="fas fa-chalkboard-user"></i><span>🎓 SKILLFORGE — Платформа для составления индивидуальных занятий</span>
+        <i class="fas fa-star"></i><span>📚 Персональный учебный трекер | Расчёт нагрузки преподавателя</span>
+        <i class="fas fa-chart-line"></i><span>💰 Умный калькулятор стоимости услуг (цена × количество)</span>
+        <i class="fas fa-brain"></i><span class="highlight">Составление занятий</span>
     </div>
-  </div>
+</div>
+
+<div class="tabs-bar">
+    <div class="tabs-container">
+        <button class="tab-btn" data-tab="view"><i class="fas fa-palette"></i> Вид</button>
+        <button class="tab-btn active" data-tab="home"><i class="fas fa-home"></i> Главная</button>
+        <div class="tab-wrapper" id="dropdownWrapper">
+            <button class="tab-btn" id="dropdownToggle"><i class="fas fa-ellipsis-h"></i> Дополнение <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i></button>
+            <div class="dropdown-content" id="dropdownMenu">
+                <div class="dropdown-item" data-action="calculator"><i class="fas fa-calculator"></i> Калькулятор</div>
+                <div class="dropdown-item" data-action="about"><i class="fas fa-user-graduate"></i> О себе</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="root" class="app-wrapper"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    class SkillForgePlanner {
+        constructor() {
+            this.resultSpan = document.getElementById('mainResult');
+            this.exprSpan = document.getElementById('expressionHistory');
+            this.infoSpan = document.getElementById('infoStatus');
+            this.currentValue = '0';
+            this.previousValue = '';
+            this.activeOperation = null;
+            this.waitingForOperand = false;
+            this.init();
+        }
+        init() { this.updateDisplay(); this.bindEvents(); this.setInfo('Готов', 'fa-arrow-right'); }
+        bindEvents() {
+            document.querySelectorAll('.digit-btn[data-digit]').forEach(btn => btn.addEventListener('click', () => this.inputDigit(btn.getAttribute('data-digit'))));
+            document.getElementById('dotBtn')?.addEventListener('click', () => this.inputDecimal());
+            document.getElementById('plusBtn')?.addEventListener('click', () => this.setOperation('+'));
+            document.getElementById('minusBtn')?.addEventListener('click', () => this.setOperation('-'));
+            document.getElementById('multiplyBtn')?.addEventListener('click', () => this.setOperation('×'));
+            document.getElementById('divideBtn')?.addEventListener('click', () => this.setOperation('÷'));
+            document.getElementById('costServiceBtn')?.addEventListener('click', () => { this.setOperation('cost'); this.setInfo('цена × кол-во', 'fa-ruble-sign'); });
+            document.getElementById('equalBtn')?.addEventListener('click', () => this.calculateResult());
+            document.getElementById('clearBtn')?.addEventListener('click', () => this.clearAll());
+            document.getElementById('signBtn')?.addEventListener('click', () => this.toggleSign());
+            document.getElementById('percentBtn')?.addEventListener('click', () => this.percent());
+            document.getElementById('sqrtBtn')?.addEventListener('click', () => this.unaryOperation('sqrt'));
+            document.getElementById('absBtn')?.addEventListener('click', () => this.unaryOperation('abs'));
+            document.getElementById('factorialBtn')?.addEventListener('click', () => this.unaryOperation('factorial'));
+            document.getElementById('powerBtn')?.addEventListener('click', () => this.setOperation('power'));
+            document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+        }
+        inputDigit(digit) {
+            if (this.waitingForOperand) { this.currentValue = digit; this.waitingForOperand = false; }
+            else { this.currentValue = this.currentValue === '0' ? digit : this.currentValue + digit; }
+            this.updateDisplay(); this.clearExprIfNeeded();
+        }
+        inputDecimal() {
+            if (this.waitingForOperand) { this.currentValue = '0.'; this.waitingForOperand = false; this.updateDisplay(); return; }
+            if (!this.currentValue.includes('.')) { this.currentValue += '.'; this.updateDisplay(); }
+        }
+        setOperation(op) {
+            if (this.activeOperation !== null && !this.waitingForOperand) this.calculateResult();
+            this.previousValue = this.currentValue;
+            this.activeOperation = op;
+            this.waitingForOperand = true;
+            this.updateExprPreview();
+        }
+        unaryOperation(op) {
+            let val = parseFloat(this.currentValue);
+            if (isNaN(val)) return;
+            let result, opName = '';
+            if (op === 'sqrt') { if (val < 0) { this.showError('Корень из отриц.'); return; } result = Math.sqrt(val); opName = '√x'; }
+            else if (op === 'abs') { result = Math.abs(val); opName = '|x|'; }
+            else if (op === 'factorial') {
+                if (val < 0 || !Number.isInteger(val)) { this.showError('n! только для целых ≥0'); return; }
+                if (val > 170) { this.showError('Слишком большое n'); return; }
+                result = this.factorial(Math.floor(val)); opName = 'n!';
+            }
+            result = parseFloat(result.toFixed(10));
+            this.exprSpan.textContent = `${opName}(${this.currentValue}) = ${result}`;
+            this.currentValue = result.toString();
+            this.updateDisplay();
+            this.waitingForOperand = true;
+            this.activeOperation = null;
+            this.setInfo(`${opName} выполнено`, 'fa-check');
+            setTimeout(() => this.setInfo('Готов', 'fa-calculator'), 1200);
+        }
+        factorial(n) { if (n === 0 || n === 1) return 1; let res = 1; for (let i = 2; i <= n; i++) { res *= i; if (res > 1e300) return Infinity; } return res; }
+        calculateResult() {
+            if (this.activeOperation === null || this.waitingForOperand) return;
+            const a = parseFloat(this.previousValue), b = parseFloat(this.currentValue);
+            if (isNaN(a) || isNaN(b)) return;
+            let result, operationSymbol = '';
+            switch (this.activeOperation) {
+                case '+': result = a + b; operationSymbol = '+'; break;
+                case '-': result = a - b; operationSymbol = '-'; break;
+                case '×': result = a * b; operationSymbol = '×'; break;
+                case '÷': if (b === 0) { this.showError('Деление на 0'); return; } result = a / b; operationSymbol = '÷'; break;
+                case 'cost': result = a * b; operationSymbol = '💰×'; break;
+                case 'power': if (a === 0 && b <= 0) { this.showError('Неопределенность'); return; } result = Math.pow(a, b); operationSymbol = 'xʸ'; break;
+                default: return;
+            }
+            if (isNaN(result) || !isFinite(result)) { this.showError('Ошибка'); return; }
+            result = parseFloat(result.toFixed(10));
+            this.currentValue = result.toString();
+            this.exprSpan.textContent = `${this.previousValue} ${operationSymbol} = ${this.currentValue}`;
+            this.activeOperation = null; this.waitingForOperand = true; this.updateDisplay();
+            this.setInfo(`= ${result}`, 'fa-check');
+            setTimeout(() => this.setInfo('Готов', 'fa-calendar-alt'), 1500);
+            this.previousValue = this.currentValue;
+        }
+        clearAll() { this.currentValue = '0'; this.previousValue = ''; this.activeOperation = null; this.waitingForOperand = false; this.exprSpan.textContent = ''; this.updateDisplay(); this.setInfo('Очищено', 'fa-broom'); }
+        toggleSign() { let val = parseFloat(this.currentValue); if (!isNaN(val)) { this.currentValue = (val * -1).toString(); this.updateDisplay(); } }
+        percent() { let val = parseFloat(this.currentValue); if (!isNaN(val)) { this.currentValue = (val / 100).toString(); this.updateDisplay(); } }
+        updateDisplay() { let displayValue = this.currentValue; if (displayValue.includes('.') && displayValue.split('.')[1].length > 8) displayValue = parseFloat(displayValue).toFixed(8).replace(/\.?0+$/, ''); if(this.resultSpan) this.resultSpan.textContent = displayValue; }
+        updateExprPreview() { if (this.activeOperation && this.previousValue && this.exprSpan) { let sym = { '+':'+','-':'-','×':'×','÷':'÷','cost':'× (стоим.)','power':'xʸ' }[this.activeOperation] || this.activeOperation; this.exprSpan.textContent = `${this.previousValue} ${sym}`; } }
+        clearExprIfNeeded() { if (this.exprSpan && this.exprSpan.textContent && !this.exprSpan.textContent.includes('=') && this.activeOperation === null) this.exprSpan.textContent = ''; }
+        setInfo(text, iconClass) { if (this.infoSpan) this.infoSpan.innerHTML = `<i class="fas ${iconClass}"></i><span>${text}</span>`; }
+        showError(msg) { if(this.resultSpan) this.resultSpan.textContent = msg; this.setInfo(msg, 'fa-exclamation-triangle'); setTimeout(() => { if(this.resultSpan && this.resultSpan.textContent === msg) this.clearAll(); }, 1500); this.currentValue = '0'; this.activeOperation = null; this.waitingForOperand = false; }
+        handleKeyboard(e) { const key = e.key; if (key >= '0' && key <= '9') { e.preventDefault(); this.inputDigit(key); } else if (key === '.') { e.preventDefault(); this.inputDecimal(); } else if (key === '+' || key === '-') { e.preventDefault(); this.setOperation(key); } else if (key === '*') { e.preventDefault(); this.setOperation('×'); } else if (key === '/') { e.preventDefault(); this.setOperation('÷'); } else if (key === 'Enter' || key === '=') { e.preventDefault(); this.calculateResult(); } else if (key === 'Escape' || key === 'c' || key === 'C') { e.preventDefault(); this.clearAll(); } else if (key === '%') { e.preventDefault(); this.percent(); } }
+    }
+
+    class HomePage {
+        constructor(parent) { this.parent = parent; }
+        render() {
+            this.parent.innerHTML = `
+                <div class="planner-card" style="text-align: center;">
+                    <div class="logo-area" style="justify-content: center; margin-bottom: 20px;">
+                        <div class="logo-icon"><i class="fas fa-chalkboard-user"></i></div>
+                        <div class="logo-text">Skill<span>Forge</span></div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(255,140,107,0.15), rgba(107,132,255,0.15)); border-radius: 24px; padding: 24px;">
+                        <i class="fas fa-calendar-alt" style="font-size: 48px; color: #ffaa8a; margin-bottom: 15px;"></i>
+                        <h2 style="color: white; font-size: 1.4rem;">Планировщик занятий</h2>
+                        <p style="color: #c0c3e0; margin: 15px 0;">Составляйте индивидуальные учебные траектории, рассчитывайте нагрузку и стоимость занятий</p>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                            <span class="badge service-badge" style="background: rgba(255,107,90,0.2); padding: 6px 12px; color: #ffaa8a;"><i class="fas fa-hand-holding-usd"></i> Услуги</span>
+                            <span class="badge app-badge" style="background: rgba(78,205,196,0.2); padding: 6px 12px; color: #a8f0da;"><i class="fas fa-clipboard-list"></i> Заявки</span>
+                        </div>
+                        <div style="margin-top: 15px; color: #c0c3e0;">
+                            <i class="fas fa-check-circle" style="color: #4ecdc4;"></i> <span>Расчёт стоимости: цена × количество</span><br>
+                            <i class="fas fa-chart-line" style="color: #4ecdc4;"></i> <span>Математические функции: n!, √x, xʸ, |x|</span>
+                        </div>
+                    </div>
+                    <div class="student-footer" style="margin-top: 20px;">
+                        <div class="student-data"><i class="far fa-user-circle"></i><span><strong>Гаджиев Амид</strong> | ИУ5Ц-63Б</span></div>
+                        <div class="theme-footer-tag"><i class="far fa-calendar-check"></i><span>Составление занятий</span></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    class AboutPage {
+        constructor(parent) { this.parent = parent; }
+        render() {
+            this.parent.innerHTML = `
+                <div class="planner-card" style="text-align: center;">
+                    <div class="logo-area" style="justify-content: center; margin-bottom: 20px;">
+                        <div class="logo-icon"><i class="fas fa-user-graduate"></i></div>
+                        <div class="logo-text">О себе</div>
+                    </div>
+                    <div style="background: rgba(255,140,107,0.1); border-radius: 20px; padding: 20px;">
+                        <img src="https://sun9-2.userapi.com/s/v1/ig2/bYGwq_4cYuM3wtWuubUS0RundgLbMEnxtR9ppxCnYd3jgEGGv7iooc0Pf2x8tPzmuL8k5LPfcaF2LL7GuPEKhIYb.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x360,640x426,720x480,1080x720,1280x853&from=bu&u=xRVSESgzs_vwYhTG_fioNCLw7JR_CiN2ngnO_7k_Cgo&cs=1280x0" alt="Фото студента" class="about-photo">
+                        <h3 style="color: white; font-size: 1.3rem;">Гаджиев Амид</h3>
+                        <p style="color: #c0c3e0;"><i class="fas fa-id-card"></i> ИУ5Ц-63Б</p>
+                        <p style="color: #c0c3e0;"><i class="fas fa-graduation-cap"></i> Студент МГТУ им. Н.Э. Баумана</p>
+                        <div style="margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 15px;">
+                            <i class="fas fa-code"></i> <span style="color: #a8f0da;">Навыки:</span> <span style="color: #c0c3e0;">JavaScript, React, Python, SQL</span>
+                        </div>
+                        <div style="color: #c0c3e0;"><i class="fas fa-brain"></i> <span style="color: #ffaa8a;">Тема:</span> Составление занятий — Планировщик уроков</div>
+                        <div style="margin-top: 15px;"><a href="https://github.com/SuperAmid" target="_blank" style="color: #ffaa8a;"><i class="fab fa-github"></i> GitHub</a></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    class ViewPage {
+        constructor(parent) { this.parent = parent; }
+        render() {
+            this.parent.innerHTML = `
+                <div class="planner-card">
+                    <h3 style="color:white; text-align:center;"><i class="fas fa-palette"></i> Оформление</h3>
+                    <p style="color:#c0c3e0; text-align:center; margin-top:15px;">Тёмная тема • Неоновые акценты • Стиль "Киберпанк"<br>Адаптивный дизайн • Плавные анимации</p>
+                    <div style="background:rgba(255,140,107,0.2); border-radius:20px; padding:15px; margin-top:15px;">
+                        <i class="fas fa-chalkboard-user"></i> <span style="color:#c0c3e0;">SkillForge — ваш надёжный планировщик занятий</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    class CalculatorPage {
+        constructor(parent) { this.parent = parent; }
+        getHTML() {
+            return `<div class="planner-card" id="calculator-container">
+                <div class="card-header">
+                    <div class="logo-area"><div class="logo-icon"><i class="fas fa-calculator"></i></div><div class="logo-text">Skill<span>Forge</span></div></div>
+                    <div class="theme-badges"><span class="badge service-badge" style="color:#ffaa8a;"><i class="fas fa-hand-holding-usd"></i> Услуги</span><span class="badge app-badge" style="color:#a8f0da;"><i class="fas fa-clipboard-list"></i> Заявки</span></div>
+                </div>
+                <div class="display-area"><div class="expression-history" id="expressionHistory"></div><div class="current-value" id="mainResult">0</div></div>
+                <div class="keys-grid">
+                    <div class="row"><button class="btn-calc factorial-btn" id="factorialBtn"><b>n!</b></button><button class="btn-calc math-btn" id="sqrtBtn"><b>√x</b></button><button class="btn-calc math-btn" id="powerBtn"><b>xʸ</b></button><button class="btn-calc math-btn" id="absBtn"><b>|x|</b></button></div>
+                    <div class="row"><button class="btn-calc digit-btn" data-digit="7">7</button><button class="btn-calc digit-btn" data-digit="8">8</button><button class="btn-calc digit-btn" data-digit="9">9</button><button class="btn-calc operation-btn" id="divideBtn"><b>÷</b></button></div>
+                    <div class="row"><button class="btn-calc digit-btn" data-digit="4">4</button><button class="btn-calc digit-btn" data-digit="5">5</button><button class="btn-calc digit-btn" data-digit="6">6</button><button class="btn-calc operation-btn" id="multiplyBtn"><b>×</b></button></div>
+                    <div class="row"><button class="btn-calc digit-btn" data-digit="1">1</button><button class="btn-calc digit-btn" data-digit="2">2</button><button class="btn-calc digit-btn" data-digit="3">3</button><button class="btn-calc operation-btn" id="minusBtn"><b>−</b></button></div>
+                    <div class="row"><button class="btn-calc digit-btn zero-btn" data-digit="0">0</button><button class="btn-calc digit-btn" id="dotBtn"><b>.</b></button><button class="btn-calc special-cost-btn" id="costServiceBtn"><i class="fas fa-ruble-sign"></i> <span>цена×кол-во</span></button><button class="btn-calc equals-btn" id="equalBtn"><b>=</b></button></div>
+                    <div class="row"><button class="btn-calc function-btn" id="percentBtn"><b>%</b></button><button class="btn-calc function-btn" id="signBtn"><b>±</b></button><button class="btn-calc function-btn" id="clearBtn"><b>C</b></button><button class="btn-calc operation-btn" id="plusBtn"><b>+</b></button></div>
+                </div>
+                <div class="info-bar"><div class="operation-status" id="infoStatus"><i class="fas fa-calculator"></i><span>Готов</span></div><div class="cost-badge-mini"><i class="fas fa-chart-line"></i><span>цена × кол-во</span></div></div>
+                <button id="showSubjectsBtn" class="btn btn-primary w-100 subjects-btn"><i class="fas fa-book-open"></i> 📚 Посмотреть все предметы</button>
+                <a href="https://github.com/SuperAmid/Java-Script_2026" target="_blank" class="github-btn"><i class="fab fa-github"></i> <span>Мой GitHub</span></a>
+                <div class="student-footer"><div class="student-data"><i class="far fa-user-circle"></i><span><strong>Гаджиев Амид</strong> | ИУ5Ц-63Б</span></div><div class="theme-footer-tag"><i class="far fa-calendar-check"></i><span>Составление занятий</span></div></div>
+            </div>`;
+        }
+        render() {
+            this.parent.innerHTML = '';
+            this.parent.insertAdjacentHTML('beforeend', this.getHTML());
+            new SkillForgePlanner();
+            document.getElementById('showSubjectsBtn')?.addEventListener('click', () => this.showSubjects());
+        }
+        showSubjects() {
+            const subjectsPage = new SubjectsPage(this.parent);
+            subjectsPage.render();
+        }
+    }
+
+    class SubjectsPage {
+        constructor(parent) { 
+            this.parent = parent; 
+            this.subjects = [
+                { 
+                    id: 1,
+                    icon: "fa-square-root-variable",
+                    title: "Математический анализ",
+                    shortDesc: "Пределы, производные, интегралы — основы высшей математики",
+                    fullDesc: "Изучение функций, пределов, производных и интегралов. Курс включает теорию и практику решения задач. Подготовка к экзаменам и олимпиадам.",
+                    hours: 128,
+                    level: "Продвинутый",
+                    topics: "Пределы, Производные, Интегралы, Дифференциальные уравнения",
+                    image: "https://avatars.mds.yandex.net/i?id=d70d9277295bc594ec8a837d8fb92e6e_l-5910728-images-thumbs&n=13"
+                },
+                { 
+                    id: 2,
+                    icon: "fa-brands fa-js",
+                    title: "Программирование на JavaScript",
+                    shortDesc: "Функции, асинхронность, работа с DOM и фреймворками",
+                    fullDesc: "Полный курс по современному JavaScript: от основ до продвинутых тем. Асинхронность, промисы, async/await, работа с API, основы React.",
+                    hours: 96,
+                    level: "Средний",
+                    topics: "ES6+, DOM, Fetch API, Async/Await, React основы",
+                    image: "https://avatars.mds.yandex.net/i?id=83558acb724f0f2452ffda59f85fb34a_l-4119069-images-thumbs&n=13"
+                },
+                { 
+                    id: 3,
+                    icon: "fa-paintbrush",
+                    title: "Веб-дизайн и UX/UI",
+                    shortDesc: "Figma, прототипирование, адаптивная верстка",
+                    fullDesc: "Проектирование интерфейсов, создание прототипов в Figma, принципы UX, адаптивная и кроссбраузерная верстка.",
+                    hours: 72,
+                    level: "Начальный",
+                    topics: "Figma, User Flow, Wireframes, HTML/CSS, Адаптив",
+                    image: "https://img.freepik.com/premium-photo/designer-working-website-compatibility-testing-computer-tablet-smartphone-screens_503750-20584.jpg?semt=ais_hybrid&w=740&q=80"
+                },
+                { 
+                    id: 4,
+                    icon: "fa-database",
+                    title: "Базы данных SQL",
+                    shortDesc: "Проектирование, запросы, индексы, оптимизация",
+                    fullDesc: "SQL от простых запросов до сложных JOIN, подзапросов, индексов и оптимизации производительности. Проектирование схем БД.",
+                    hours: 84,
+                    level: "Средний",
+                    topics: "SELECT, JOIN, GROUP BY, Индексы, Транзакции",
+                    image: "https://i.pinimg.com/736x/e3/3a/38/e33a388691b7fdaab19cda7cb8ac7213.jpg"
+                },
+                { 
+                    id: 5,
+                    icon: "fa-language",
+                    title: "Английский для IT",
+                    shortDesc: "Технический английский, коммуникация с заказчиками",
+                    fullDesc: "Английский для IT-специалистов: техническая документация, переговоры, ведение переписки, подготовка к собеседованиям.",
+                    hours: 60,
+                    level: "Любой",
+                    topics: "Technical vocabulary, Writing docs, Meetings",
+                    image: "https://exam.bgu.ru/elc/pluginfile.php/33879/course/overviewfiles/I6R_44COy4U.jpg"
+                }
+            ];
+        }
+
+        showDetail(subject) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <img src="${subject.image}" style="width: 100%; border-radius: 16px; margin-bottom: 12px; height: 140px; object-fit: cover;">
+                    <div style="font-size: 48px; margin-bottom: 10px;"><i class="fas ${subject.icon}" style="color: #ffaa8a;"></i></div>
+                    <h3>${subject.title}</h3>
+                    <p><strong style="color:#ffaa8a;">📖 Полное описание:</strong><br>${subject.fullDesc}</p>
+                    <p><i class="fas fa-list-check"></i> <strong>Темы:</strong> ${subject.topics}</p>
+                    <p><i class="fas fa-clock"></i> <strong>Объём:</strong> ${subject.hours} академических часов</p>
+                    <p><i class="fas fa-chart-line"></i> <strong>Уровень:</strong> ${subject.level}</p>
+                    <button class="modal-close">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            setTimeout(() => modal.classList.add('active'), 10);
+            modal.querySelector('.modal-close').addEventListener('click', () => {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+            });
+            modal.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.remove('active'); setTimeout(() => modal.remove(), 300); } });
+        }
+
+        render() {
+            this.parent.innerHTML = '';
+            const container = document.createElement('div');
+            container.className = 'planner-card';
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="logo-area"><div class="logo-icon"><i class="fas fa-book-open"></i></div><div class="logo-text">Все предметы</div></div>
+                    <button id="backFromSubjects" style="background: rgba(255,140,107,0.2); border: none; border-radius: 30px; padding: 5px 12px; color:#ffaa8a; font-size:0.7rem;"><i class="fas fa-arrow-left"></i> Назад</button>
+                </div>
+                <div class="subjects-grid" id="subjectsGrid"></div>
+                <div class="student-footer" style="margin-top: 15px;">
+                    <div class="student-data"><i class="far fa-user-circle"></i><span><strong>Гаджиев Амид</strong> | ИУ5Ц-63Б</span></div>
+                    <div class="theme-footer-tag"><i class="far fa-calendar-check"></i><span>Составление занятий</span></div>
+                </div>
+            `;
+            this.parent.appendChild(container);
+            
+            const grid = document.getElementById('subjectsGrid');
+            this.subjects.forEach(subj => {
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.innerHTML = `
+                    <img src="${subj.image}" class="subject-img" alt="${subj.title}">
+                    <div class="subject-header">
+                        <div class="subject-icon"><i class="fas ${subj.icon}"></i></div>
+                        <div>
+                            <div class="subject-title">${subj.title}</div>
+                            <div class="subject-meta">
+                                <span><i class="fas fa-clock"></i> ${subj.hours} ч.</span>
+                                <span><i class="fas fa-chart-line"></i> ${subj.level}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="subject-desc">${subj.shortDesc}</div>
+                    <div class="detail-btn" data-id="${subj.id}">Подробнее <i class="fas fa-arrow-right"></i></div>
+                `;
+                grid.appendChild(card);
+                card.querySelector('.detail-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showDetail(subj);
+                });
+            });
+            
+            document.getElementById('backFromSubjects')?.addEventListener('click', () => {
+                new CalculatorPage(this.parent).render();
+            });
+        }
+    }
+
+    const root = document.getElementById('root');
+    function setActiveTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        if (tabId === 'home') document.querySelector('.tab-btn[data-tab="home"]')?.classList.add('active');
+        else if (tabId === 'view') document.querySelector('.tab-btn[data-tab="view"]')?.classList.add('active');
+    }
+
+    function showHomePage() { new HomePage(root).render(); setActiveTab('home'); }
+    function showViewPage() { new ViewPage(root).render(); setActiveTab('view'); }
+    function showCalculatorPage() { new CalculatorPage(root).render(); setActiveTab(null); }
+    function showAboutPage() { new AboutPage(root).render(); setActiveTab(null); }
+
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            if (tab === 'home') showHomePage();
+            else if (tab === 'view') showViewPage();
+            document.getElementById('dropdownMenu')?.classList.remove('show');
+        });
+    });
+
+    const dropdownToggle = document.getElementById('dropdownToggle');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    if (dropdownToggle && dropdownMenu) {
+        dropdownToggle.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const action = item.getAttribute('data-action');
+                if (action === 'calculator') showCalculatorPage();
+                else if (action === 'about') showAboutPage();
+                dropdownMenu.classList.remove('show');
+            });
+        });
+        document.addEventListener('click', (e) => { if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) dropdownMenu.classList.remove('show'); });
+    }
+
+    showHomePage();
+</script>
 </body>
 </html>

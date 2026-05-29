@@ -1,56 +1,511 @@
-
-/* опишем базовый стиль кнопки калькулятора */
-.my-btn { 
-  margin-right: 5px;           /* задаем отступ от кнопки справа */
-  margin-top: 5px;             /* задаем отступ от кнопки сверху*/
-  width: 50px;                 /* задаем ширину кнопки */
-  height: 50px;                /* задаем высоту кнопки */
-  border-radius: 50%;          /* округляем кнопку */
-  border: none;                /* отключаем обводку */
-  background: #515151;         /* задаем серый цвет кнопки */
-  color: white;                /* задаем белый цвет текста внутри кнопки */
-  font-size: 1.5rem;           /* увеличим размер шрифта */
-  font-family: Arial, Helvetica, sans-serif; /* сменим шрифт */
-  cursor: pointer;             /* при наведении на кнопку курсор будет изменен
-                                  со стрелки на 'указательный палец' */
-  user-select: none;           /* отключаем возможность выделить текст внутри кнопки */
-} 
-
-/* hover - это состояние элемента, когда на него наведен курсор */
-.my-btn:hover {
-  background: darkgray; /* при наведение курсора на кнопку, она будет окрашена в серый */
+/* ===== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ===== */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --dark-bg: #1a1b2f;
+    --card-bg: rgba(26, 27, 47, 0.95);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --service-color: #ff6b6b;
+    --application-color: #4ecdc4;
+    --special-color: #a8e6cf;
+    --glass-effect: rgba(255, 255, 255, 0.1);
+    --border-glow: rgba(255, 255, 255, 0.05);
 }
 
-/* active - это состояние активации элемента. В случае кнопки - нажатие на нее */
-.my-btn:active {
-  filter: brightness(130%); /* увеличим интенсивность цвета для эффекта вспышки */
+/* ===== СБРОС СТИЛЕЙ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* селектор для кнопок первостепенных операций */
-.my-btn.primary { 
-  background: #ff9801; /* цвет кнопки оранжевый */
+/* ===== БАЗОВЫЕ СТИЛИ ===== */
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--dark-bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow-x: hidden;
 }
 
-/* селектор для кнопок второстепенных операций */
-.my-btn.secondary { 
-  background: #a6a6a6; /* цвет кнопки сервый */
+/* ===== ДЕКОРАТИВНЫЕ ЭЛЕМЕНТЫ ФОНА ===== */
+.app {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
 }
 
-/* селектор для кнопки расчета выражения (=) */
-.my-btn.execute { 
-  width: 110px;          /* сделаем кнопку шире других */
-  border-radius: 34px;   /* подкорректируем округлость */
+.bg-circle {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
 }
 
-/* селектор для поля вывода результата */
-.result { 
-  width: 220px;
-  height: 50px;
-  margin-bottom: 15px;         /* отступ снизу */
-  padding-right: 10px;         /* выступ справа */
-  background: rgb(73, 73, 73); /* цвет можно задавать и таким образом */
-  text-align: right;           /* примагнитим текст к правой стороне */
-  color: #ffffff;              /* цвет текста белый */
-  font-size: 1.5rem;
-  font-family: Arial, Helvetica, sans-serif;
+.circle-1 {
+    width: 400px;
+    height: 400px;
+    background: rgba(102, 126, 234, 0.3);
+    top: -100px;
+    left: -100px;
+}
+
+.circle-2 {
+    width: 500px;
+    height: 500px;
+    background: rgba(118, 75, 162, 0.3);
+    bottom: -150px;
+    right: -150px;
+}
+
+.circle-3 {
+    width: 300px;
+    height: 300px;
+    background: rgba(240, 147, 251, 0.2);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ===== КАЛЬКУЛЯТОР ===== */
+.calculator {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    padding: 30px 25px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-glow);
+    position: relative;
+    z-index: 10;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ===== ХЕДЕР КАЛЬКУЛЯТОРА ===== */
+.calculator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.logo i {
+    font-size: 1.5rem;
+    color: #4facfe;
+}
+
+.logo .highlight {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.theme-badge {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    backdrop-filter: blur(5px);
+}
+
+.service-badge {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.application-badge {
+    background: rgba(78, 205, 196, 0.2);
+    color: #4ecdc4;
+    border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+/* ===== ДИСПЛЕЙ ===== */
+.display-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px solid var(--border-glow);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.expression {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    min-height: 24px;
+    text-align: right;
+    font-family: 'Monaco', 'Menlo', monospace;
+    opacity: 0.7;
+    word-break: break-all;
+}
+
+.result {
+    color: var(--text-primary);
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: right;
+    line-height: 1.2;
+    font-family: 'Monaco', 'Menlo', monospace;
+    word-break: break-all;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* ===== КЛАВИАТУРА ===== */
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 12px;
+}
+
+/* ===== ОБЩИЕ СТИЛИ КНОПОК ===== */
+.btn {
+    flex: 1;
+    aspect-ratio: 1 / 1;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--border-glow);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: 0.5s;
+}
+
+.btn:hover::before {
+    transform: translateX(100%);
+}
+
+.btn:hover {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn:active {
+    transform: scale(0.9);
+}
+
+/* ===== ТИПЫ КНОПОК ===== */
+.digit-btn {
+    background: rgba(255, 255, 255, 0.08);
+    font-weight: 500;
+}
+
+.function-btn {
+    background: rgba(255, 255, 255, 0.03);
+    color: #a0a0a0;
+    font-size: 1.2rem;
+}
+
+.operation-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.special-btn {
+    background: linear-gradient(135deg, #a8e6cf, #d4edda);
+    color: #1a2f3f;
+    box-shadow: 0 5px 15px rgba(168, 230, 207, 0.3);
+    position: relative;
+}
+
+.equals-btn {
+    background: linear-gradient(135deg, #4ecdc4, #45b7aa);
+    color: white;
+    box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+    flex: 2;
+}
+
+.zero-btn {
+    flex: 2;
+    aspect-ratio: auto;
+}
+
+/* ===== ТУЛТИП ===== */
+.btn-tooltip {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.special-btn:hover .btn-tooltip {
+    opacity: 1;
+}
+
+/* ===== ИНФОРМАЦИОННАЯ ПАНЕЛЬ ===== */
+.info-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-glow);
+}
+
+.operation-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.operation-indicator i {
+    color: #4ecdc4;
+}
+
+.cost-hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(236, 0, 157, 0.1);
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: #a8e6cf;
+    font-size: 0.8rem;
+}
+
+/* ===== ФУТЕР ===== */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-glow);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.student-info, .theme-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.student-info i, .theme-tag i {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* ===== АНИМАЦИИ ===== */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.operation-indicator i {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
+@media (max-width: 480px) {
+    .calculator {
+        padding: 20px 15px;
+    }
+    
+    .result {
+        font-size: 2.2rem;
+    }
+    
+    .btn {
+        font-size: 1.2rem;
+    }
+    
+    .footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+/* ===== ВЕРХНИЙ ЧЕРНЫЙ ФУТЕР ===== */
+.top-footer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #000000;
+    color: #ffffff;
+    padding: 12px 0;
+    z-index: 100;
+    border-bottom: 2px solid #ff6b6b;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.top-footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 0.9rem;
+}
+
+.footer-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.footer-link {
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.footer-link:hover {
+    color: #ff6b6b;
+    transform: translateY(-2px);
+}
+
+.separator {
+    color: #4ecdc4;
+    margin: 0 5px;
+}
+
+.footer-section i {
+    font-size: 1.2rem;
+}
+
+/* Кнопка GitHub (если её нет в CSS) */
+.github-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 15px;
+    margin: 15px 0 10px 0;
+    background: #24292e;
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(141, 8, 85, 0.3);
+}
+
+.github-button i {
+    font-size: 1.3rem;
+}
+
+.github-button:hover {
+    background: #2c974b;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.github-button:active {
+    transform: translateY(0);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .top-footer-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .footer-section {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Отступ для калькулятора, чтобы не перекрывался верхним футером */
+    .calculator {
+        margin-top: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-footer {
+        padding: 8px 0;
+    }
+    
+    .footer-section {
+        gap: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .calculator {
+        margin-top: 120px;
+    }
 }
